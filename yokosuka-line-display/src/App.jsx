@@ -170,8 +170,8 @@ function minutesToTime(totalMinutes) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-function nowMinutes(date) {
-  return date.getHours() * 60 + date.getMinutes();
+function nowSeconds(date) {
+  return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
 }
 
 function formatDate(date) {
@@ -188,17 +188,25 @@ function formatClock(date) {
 }
 
 function getUpcomingTrains(date) {
-  const current = nowMinutes(date);
+  const currentSec = nowSeconds(date);
+
+  // 発車時刻を秒単位で過ぎていない電車のみ。発車時刻ちょうど（例: 57:00）で即座に消える。
+  // 残り時間は切り上げ表示なので「あと0分」「あと-1分」は出ない。
   const upcoming = timetable
-    .map((train) => ({ ...train, minutes: train.minutesFromMidnight - current }))
-    .filter((train) => train.minutes >= -1)
+    .map((train) => ({
+      ...train,
+      minutes: Math.ceil((train.minutesFromMidnight * 60 - currentSec) / 60),
+      secondsToDeparture: train.minutesFromMidnight * 60 - currentSec,
+    }))
+    .filter((train) => train.secondsToDeparture > 0)
     .slice(0, 4);
 
   if (upcoming.length >= 4) return upcoming;
 
-  const tomorrow = timetable
-    .slice(0, 4 - upcoming.length)
-    .map((train) => ({ ...train, minutes: train.minutesFromMidnight + 24 * 60 - current }));
+  const tomorrow = timetable.slice(0, 4 - upcoming.length).map((train) => {
+    const secondsToDeparture = train.minutesFromMidnight * 60 + 24 * 3600 - currentSec;
+    return { ...train, minutes: Math.ceil(secondsToDeparture / 60), secondsToDeparture };
+  });
 
   return [...upcoming, ...tomorrow];
 }
