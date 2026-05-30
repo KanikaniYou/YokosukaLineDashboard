@@ -514,16 +514,16 @@ export default function YokosukaLineHomeDisplay() {
             </div>
             <div className="mt-3 flex items-end gap-3">
               <div className="text-6xl font-black leading-none tabular-nums">{formatClock(now)}</div>
-              <div className="pb-1 text-base font-black leading-none tabular-nums text-white/70">{formatDate(now)}</div>
+              <div className="whitespace-nowrap pb-1 text-base font-black leading-none tabular-nums text-white/70">{formatDate(now)}</div>
             </div>
           </div>
 
-          <div className={`ml-auto flex w-[24rem] shrink-0 flex-col justify-center gap-2 rounded-2xl border px-4 py-3 ${weatherStyle.border} ${weatherStyle.bg}`}>
+          <div className={`ml-auto flex w-[31rem] shrink-0 flex-col justify-center gap-2 rounded-2xl border px-4 py-3 ${weatherStyle.border} ${weatherStyle.bg}`}>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <WeatherIcon size={30} className={weatherStyle.text} />
+                <WeatherIcon size={30} className={`shrink-0 ${weatherStyle.text}`} />
                 <div>
-                  <div className="text-2xl font-black leading-none">{weather.condition}</div>
+                  <div className="whitespace-nowrap text-2xl font-black leading-none">{weather.condition}</div>
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-black tracking-wider ${weatherStyle.border} ${weatherStyle.text}`}>
                       {weatherStyle.recommendation}
@@ -541,8 +541,8 @@ export default function YokosukaLineHomeDisplay() {
             <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-black tracking-widest text-white/45">明日</span>
-                <TomorrowIcon size={16} className={weatherStyle.text} />
-                <span className="text-base font-black">{weather.tomorrow.condition}</span>
+                <TomorrowIcon size={16} className={`shrink-0 ${weatherStyle.text}`} />
+                <span className="whitespace-nowrap text-base font-black">{weather.tomorrow.condition}</span>
               </div>
               <div className="flex shrink-0 items-center gap-3 text-right">
                 <span className="text-xs font-bold text-white/45">降水 {weather.tomorrow.rain}%</span>
