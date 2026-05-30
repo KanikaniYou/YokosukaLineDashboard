@@ -194,10 +194,10 @@ function getUpcomingTrains(date) {
     .filter((train) => train.minutes >= -1)
     .slice(0, 3);
 
-  if (upcoming.length >= 2) return upcoming;
+  if (upcoming.length >= 3) return upcoming;
 
   const tomorrow = timetable
-    .slice(0, 2 - upcoming.length)
+    .slice(0, 3 - upcoming.length)
     .map((train) => ({ ...train, minutes: train.minutesFromMidnight + 24 * 60 - current }));
 
   return [...upcoming, ...tomorrow];
@@ -297,6 +297,8 @@ const LINE_ICONS = {
 };
 
 function TrainRow({ train, delayMinutes, operation }) {
+  if (!train) return null;
+
   const isNormalOperation = operation.severity === "normal";
   const urgencyMinutes = train.minutes - WALKING_MINUTES_TO_PLATFORM;
 
