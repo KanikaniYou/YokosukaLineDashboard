@@ -286,8 +286,8 @@ function getWeatherIcon(condition) {
 function StatusBadge({ line }) {
   const isNormal = line.severity === "normal";
   return (
-    <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${isNormal ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/20 text-amber-300"}`}>
-      {isNormal ? <TrainFront size={13} /> : <AlertTriangle size={13} />}
+    <div className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold ${isNormal ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/20 text-amber-300"}`}>
+      {isNormal ? <TrainFront size={15} /> : <AlertTriangle size={15} />}
       <span className="text-white/70">{line.name}</span>
       <span>{line.status}</span>
     </div>
@@ -338,32 +338,32 @@ function TrainRow({ train, delayMinutes, operation }) {
   const iconSrc = LINE_ICONS[train.line] || `${BASE_URL}yokosuka-line.png`;
 
   return (
-    <div className={`rounded-2xl border bg-white/[0.035] p-3 shadow-2xl ${urgencyBorder} ${urgencyGlow}`}>
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden">
+    <div className={`flex flex-1 items-center rounded-2xl border bg-white/[0.035] px-4 py-3 shadow-2xl ${urgencyBorder} ${urgencyGlow}`}>
+      <div className="flex w-full items-center gap-3">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden">
           <img src={iconSrc} alt="train" className="h-full w-full scale-125 object-contain" />
         </div>
 
-        <div className="w-[6.5rem] shrink-0 text-4xl font-black tracking-tight tabular-nums text-white">{adjustedTime}</div>
+        <div className="w-[8rem] shrink-0 text-5xl font-black tracking-tight tabular-nums text-white">{adjustedTime}</div>
 
-        <div className="w-52 shrink-0">
+        <div className="w-56 shrink-0">
           {isNormalOperation && (
-            <span className={`inline-flex whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-sm font-black ${urgencyBg} ${urgencyText}`}>
+            <span className={`inline-flex whitespace-nowrap rounded-full border border-white/10 px-3 py-1.5 text-base font-black ${urgencyBg} ${urgencyText}`}>
               {urgencyLabel}
             </span>
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <div className="w-28 shrink-0">
-            <span className="inline-flex whitespace-nowrap rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="w-32 shrink-0">
+            <span className="inline-flex whitespace-nowrap rounded-md px-2.5 py-1 text-sm font-black text-white" style={{ backgroundColor: lineColor }}>
               {train.line}
             </span>
           </div>
-          <div className="shrink-0 whitespace-nowrap rounded-md border border-white/15 px-3 py-1 text-base font-bold text-white/80">{train.type}</div>
+          <div className="shrink-0 whitespace-nowrap rounded-md border border-white/15 px-3 py-1 text-lg font-bold text-white/80">{train.type}</div>
           <div className="flex shrink-0 items-end gap-1">
-            <div className="whitespace-nowrap text-2xl font-black text-white">{train.destination}</div>
-            <div className="mb-1 text-xs font-bold tracking-widest text-white/50">行</div>
+            <div className="whitespace-nowrap text-3xl font-black text-white">{train.destination}</div>
+            <div className="mb-1 text-sm font-bold tracking-widest text-white/50">行</div>
           </div>
         </div>
       </div>
@@ -542,51 +542,51 @@ export default function YokosukaLineHomeDisplay() {
   const TomorrowIcon = getWeatherIcon(weather.tomorrow.condition);
 
   return (
-    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-[#050607] p-4 text-white">
+    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-[#050607] p-6 text-white">
       <FullscreenButton />
-      <div className="mx-auto flex h-full max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 p-5 shadow-2xl shadow-black lg:aspect-[16/10] lg:h-auto">
+      <div className="flex h-full w-full max-w-7xl flex-col overflow-hidden">
         {/* ===== 上段: 時計 + 天気 ===== */}
         <section className="mb-4 flex items-stretch gap-4 border-b border-white/10 pb-4">
           <div className="flex flex-col justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-tight">東戸塚駅</h1>
-              <p className="mt-1 text-sm font-bold text-white/50">横須賀線・湘南新宿ライン 上り / 東京・新宿方面</p>
+              <h1 className="text-4xl font-black tracking-tight">東戸塚駅</h1>
+              <p className="mt-1 text-base font-bold text-white/50">横須賀線・湘南新宿ライン 上り / 東京・新宿方面</p>
             </div>
             <div className="mt-3 flex items-end gap-3">
-              <div className="text-6xl font-black leading-none tabular-nums">{formatClock(now)}</div>
-              <div className="whitespace-nowrap pb-1 text-base font-black leading-none tabular-nums text-white/70">{formatDate(now)}</div>
+              <div className="text-7xl font-black leading-none tabular-nums">{formatClock(now)}</div>
+              <div className="whitespace-nowrap pb-1.5 text-lg font-black leading-none tabular-nums text-white/70">{formatDate(now)}</div>
             </div>
           </div>
 
-          <div className={`ml-auto flex w-[31rem] shrink-0 flex-col justify-center gap-2 rounded-2xl border px-4 py-3 ${weatherStyle.border} ${weatherStyle.bg}`}>
+          <div className={`ml-auto flex w-[35rem] shrink-0 flex-col justify-center gap-2.5 rounded-2xl border px-5 py-3.5 ${weatherStyle.border} ${weatherStyle.bg}`}>
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <WeatherIcon size={30} className={`shrink-0 ${weatherStyle.text}`} />
+              <div className="flex items-center gap-2.5">
+                <WeatherIcon size={34} className={`shrink-0 ${weatherStyle.text}`} />
                 <div>
-                  <div className="whitespace-nowrap text-2xl font-black leading-none">{weather.condition}</div>
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-black tracking-wider ${weatherStyle.border} ${weatherStyle.text}`}>
+                  <div className="whitespace-nowrap text-3xl font-black leading-none">{weather.condition}</div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-black tracking-wider ${weatherStyle.border} ${weatherStyle.text}`}>
                       {weatherStyle.recommendation}
                     </span>
-                    <span className="text-xs font-bold text-white/45">降水 {weather.rain}%</span>
+                    <span className="text-sm font-bold text-white/45">降水 {weather.rain}%</span>
                   </div>
                 </div>
               </div>
               <div className="shrink-0 text-right">
-                <div className="text-3xl font-black leading-none tabular-nums">{weather.currentTemp.toFixed(1)}℃</div>
-                <div className="mt-1 text-xs font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
+                <div className="text-4xl font-black leading-none tabular-nums">{weather.currentTemp.toFixed(1)}℃</div>
+                <div className="mt-1.5 text-sm font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2">
+            <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2.5">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black tracking-widest text-white/45">明日</span>
-                <TomorrowIcon size={16} className={`shrink-0 ${weatherStyle.text}`} />
-                <span className="whitespace-nowrap text-base font-black">{weather.tomorrow.condition}</span>
+                <span className="text-xs font-black tracking-widest text-white/45">明日</span>
+                <TomorrowIcon size={18} className={`shrink-0 ${weatherStyle.text}`} />
+                <span className="whitespace-nowrap text-lg font-black">{weather.tomorrow.condition}</span>
               </div>
               <div className="flex shrink-0 items-center gap-3 text-right">
-                <span className="text-xs font-bold text-white/45">降水 {weather.tomorrow.rain}%</span>
-                <span className="text-sm font-black tabular-nums">
+                <span className="text-sm font-bold text-white/45">降水 {weather.tomorrow.rain}%</span>
+                <span className="text-base font-black tabular-nums">
                   {weather.tomorrow.high}℃ <span className="font-bold text-white/45">/ {weather.tomorrow.low}℃</span>
                 </span>
               </div>
@@ -602,7 +602,7 @@ export default function YokosukaLineHomeDisplay() {
                 <StatusBadge key={line.id} line={line} />
               ))}
             </div>
-            <div className="shrink-0 text-xs font-bold text-white/40">ホームまで徒歩10分</div>
+            <div className="shrink-0 text-sm font-bold text-white/40">ホームまで徒歩10分</div>
           </div>
 
           {/* 平常時は発車案内、遅延・運転見合わせ時はこのエリア全体が運行情報／JRマップに切り替わる */}
@@ -648,7 +648,7 @@ export default function YokosukaLineHomeDisplay() {
               </div>
             </div>
           ) : (
-            <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
               <TrainRow train={trains[0]} delayMinutes={0} operation={operationFor(trains[0])} />
               <TrainRow train={trains[1]} delayMinutes={0} operation={operationFor(trains[1])} />
               <TrainRow train={trains[2]} delayMinutes={0} operation={operationFor(trains[2])} />
