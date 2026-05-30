@@ -353,8 +353,10 @@ function TrainRow({ train, delayMinutes, operation }) {
         </div>
 
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <div className="shrink-0 whitespace-nowrap rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
-            {train.line}
+          <div className="w-28 shrink-0">
+            <span className="inline-flex whitespace-nowrap rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
+              {train.line}
+            </span>
           </div>
           <div className="shrink-0 whitespace-nowrap rounded-md border border-white/15 px-3 py-1 text-base font-bold text-white/80">{train.type}</div>
           <div className="flex shrink-0 items-end gap-1">
