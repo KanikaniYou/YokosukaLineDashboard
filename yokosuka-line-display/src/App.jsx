@@ -342,21 +342,23 @@ function TrainRow({ train, delayMinutes, operation }) {
           <img src={iconSrc} alt="train" className="h-full w-full scale-125 object-contain" />
         </div>
 
-        <div className="shrink-0 text-4xl font-black tracking-tight tabular-nums text-white">{adjustedTime}</div>
+        <div className="w-[6.5rem] shrink-0 text-4xl font-black tracking-tight tabular-nums text-white">{adjustedTime}</div>
 
-        {isNormalOperation && (
-          <span className={`shrink-0 inline-flex whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-sm font-black ${urgencyBg} ${urgencyText}`}>
-            {urgencyLabel}
-          </span>
-        )}
+        <div className="w-52 shrink-0">
+          {isNormalOperation && (
+            <span className={`inline-flex whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-sm font-black ${urgencyBg} ${urgencyText}`}>
+              {urgencyLabel}
+            </span>
+          )}
+        </div>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 text-right">
-          <div className="rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="shrink-0 whitespace-nowrap rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
             {train.line}
           </div>
-          <div className="rounded-md border border-white/15 px-3 py-1 text-base font-bold text-white/80">{train.type}</div>
-          <div className="flex items-end gap-1">
-            <div className="text-2xl font-black text-white">{train.destination}</div>
+          <div className="shrink-0 whitespace-nowrap rounded-md border border-white/15 px-3 py-1 text-base font-bold text-white/80">{train.type}</div>
+          <div className="flex shrink-0 items-end gap-1">
+            <div className="whitespace-nowrap text-2xl font-black text-white">{train.destination}</div>
             <div className="mb-1 text-xs font-bold tracking-widest text-white/50">行</div>
           </div>
         </div>
