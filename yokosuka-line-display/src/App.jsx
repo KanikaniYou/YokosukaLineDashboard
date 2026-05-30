@@ -7,6 +7,8 @@ import {
   CloudRain,
   CloudSnow,
   CloudSun,
+  Maximize,
+  Minimize,
   Sun,
   TrainFront,
 } from "lucide-react";
@@ -369,6 +371,39 @@ function TrainRow({ train, delayMinutes, operation }) {
   );
 }
 
+// 画面タップ/クリックで全画面ON/OFF（自動全画面はブラウザ仕様で不可なためボタン起点）
+function FullscreenButton() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  const toggle = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      document.documentElement.requestFullscreen?.();
+    }
+  };
+
+  const Icon = isFullscreen ? Minimize : Maximize;
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={isFullscreen ? "全画面を終了" : "全画面表示"}
+      title={isFullscreen ? "全画面を終了" : "全画面表示"}
+      className="fixed right-3 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white/40 opacity-30 backdrop-blur transition hover:bg-white/10 hover:text-white hover:opacity-100"
+    >
+      <Icon size={16} />
+    </button>
+  );
+}
+
 export default function YokosukaLineHomeDisplay() {
   const [now, setNow] = useState(new Date());
   const [operationLines, setOperationLines] = useState(defaultOperationLines);
@@ -508,6 +543,7 @@ export default function YokosukaLineHomeDisplay() {
 
   return (
     <div className="h-screen w-full overflow-hidden bg-[#050607] p-4 text-white">
+      <FullscreenButton />
       <div className="mx-auto flex h-full max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 p-5 shadow-2xl shadow-black lg:aspect-[16/10] lg:h-auto">
         {/* ===== 上段: 時計 + 天気 ===== */}
         <section className="mb-4 flex items-stretch gap-4 border-b border-white/10 pb-4">

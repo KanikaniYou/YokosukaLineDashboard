@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>yokosuka-line-display</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>東戸塚駅 発車案内</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#050607" />
+
+    <!-- iOS: ホーム画面に追加でブラウザ枠なし起動 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="東戸塚 発車案内" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div id="root"></div>

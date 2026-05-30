@@ -1,0 +1,17 @@
+{
+  "name": "東戸塚駅 発車案内",
+  "short_name": "東戸塚 発車案内",
+  "description": "東戸塚駅 横須賀線・湘南新宿ライン 上り 発車案内ダッシュボード",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
