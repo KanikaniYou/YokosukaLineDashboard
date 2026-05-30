@@ -499,135 +499,114 @@ export default function YokosukaLineHomeDisplay() {
   return (
     <div className="h-screen w-full overflow-hidden bg-[#050607] p-4 text-white">
       <div className="mx-auto flex h-full max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 p-5 shadow-2xl shadow-black lg:aspect-[16/10] lg:h-auto">
-        <header className="relative mb-4 flex items-start justify-between border-b border-white/10 pb-4">
-          <div>
-            <h1 className="text-3xl font-black tracking-tight">東戸塚駅</h1>
-            <p className="mt-1 text-sm font-bold text-white/50">横須賀線・湘南新宿ライン 上り / 東京・新宿方面</p>
+        {/* ===== 上段: 時計 + 天気 ===== */}
+        <section className="mb-4 flex items-stretch gap-4 border-b border-white/10 pb-4">
+          <div className="flex flex-col justify-between">
+            <div>
+              <h1 className="text-3xl font-black tracking-tight">東戸塚駅</h1>
+              <p className="mt-1 text-sm font-bold text-white/50">横須賀線・湘南新宿ライン 上り / 東京・新宿方面</p>
+            </div>
+            <div className="mt-3 flex items-end gap-3">
+              <div className="text-6xl font-black leading-none tabular-nums">{formatClock(now)}</div>
+              <div className="pb-1 text-base font-black leading-none tabular-nums text-white/70">{formatDate(now)}</div>
+            </div>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
-            <div className="text-4xl font-black leading-none tabular-nums">{formatClock(now)}</div>
-          </div>
-
-          <div className="text-right text-2xl font-black leading-none tabular-nums text-white/80">
-            {formatDate(now)}
-          </div>
-        </header>
-
-        <main className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden lg:grid-cols-[1.35fr_1.05fr]">
-          <section className="flex min-h-0 flex-col gap-3 overflow-hidden pr-1">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                {operationLines.map((line) => (
-                  <StatusBadge key={line.id} line={line} />
-                ))}
+          <div className={`ml-auto flex w-[24rem] shrink-0 flex-col justify-center gap-2 rounded-2xl border px-4 py-3 ${weatherStyle.border} ${weatherStyle.bg}`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <WeatherIcon size={30} className={weatherStyle.text} />
+                <div>
+                  <div className="text-2xl font-black leading-none">{weather.condition}</div>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-black tracking-wider ${weatherStyle.border} ${weatherStyle.text}`}>
+                      {weatherStyle.recommendation}
+                    </span>
+                    <span className="text-xs font-bold text-white/45">降水 {weather.rain}%</span>
+                  </div>
+                </div>
               </div>
-              <div className="shrink-0 text-xs font-bold text-white/40">ホームまで徒歩10分</div>
+              <div className="shrink-0 text-right">
+                <div className="text-3xl font-black leading-none tabular-nums">{weather.currentTemp.toFixed(1)}℃</div>
+                <div className="mt-1 text-xs font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
+              </div>
             </div>
 
+            <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-black tracking-widest text-white/45">明日</span>
+                <TomorrowIcon size={16} className={weatherStyle.text} />
+                <span className="text-base font-black">{weather.tomorrow.condition}</span>
+              </div>
+              <div className="flex shrink-0 items-center gap-3 text-right">
+                <span className="text-xs font-bold text-white/45">降水 {weather.tomorrow.rain}%</span>
+                <span className="text-sm font-black tabular-nums">
+                  {weather.tomorrow.high}℃ <span className="font-bold text-white/45">/ {weather.tomorrow.low}℃</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== 下段: 運行情報 ===== */}
+        <main className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {operationLines.map((line) => (
+                <StatusBadge key={line.id} line={line} />
+              ))}
+            </div>
+            <div className="shrink-0 text-xs font-bold text-white/40">ホームまで徒歩10分</div>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
             <TrainRow train={trains[0]} delayMinutes={0} operation={operationFor(trains[0])} />
             <TrainRow train={trains[1]} delayMinutes={0} operation={operationFor(trains[1])} />
             <TrainRow train={trains[2]} delayMinutes={0} operation={operationFor(trains[2])} />
-          </section>
+          </div>
 
-          <aside className="flex min-h-0 flex-col gap-3 overflow-hidden pr-1">
-            <div className={`rounded-2xl border p-4 ${weatherStyle.border} ${weatherStyle.bg}`}>
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-black tracking-[0.2em] text-white">
-                  <WeatherIcon size={17} /> WEATHER
+          <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.025] p-3">
+            {!showOperationMap ? (
+              <div className="flex items-center gap-3">
+                <span className="shrink-0 text-xs font-bold text-white/40">運行メモ</span>
+                <div className="grid flex-1 grid-cols-2 gap-2">
+                  {operationLines.map((line) => {
+                    const isNormal = line.severity === "normal";
+                    return (
+                      <div key={line.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5">
+                        <span
+                          className="shrink-0 rounded px-2 py-0.5 text-[11px] font-black text-white"
+                          style={{ backgroundColor: LINE_COLORS[line.name] || YOKOSUKA_BLUE }}
+                        >
+                          {line.name}
+                        </span>
+                        <span className={`shrink-0 text-xs font-black ${isNormal ? "text-emerald-300" : "text-amber-300"}`}>
+                          {line.status}
+                        </span>
+                        <span className="truncate text-xs font-bold text-white/45">{line.detail}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className={`text-sm font-bold ${weatherStyle.text}`}>{weather.area}</div>
+                <span className="shrink-0 text-[11px] text-white/30">Yahoo経由</span>
               </div>
-
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-3xl font-black">{weather.condition}</div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-black tracking-wider ${weatherStyle.border} ${weatherStyle.bg} ${weatherStyle.text}`}>
-                      {weatherStyle.recommendation}
-                    </div>
-                    <div className="text-sm font-bold text-white/45">降水確率 {weather.rain}%</div>
-                  </div>
-                </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-4xl font-black tabular-nums">{weather.currentTemp.toFixed(1)}℃</div>
-                  <div className="mt-1 text-sm font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
-                </div>
-              </div>
-
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black tracking-widest text-white/45">明日</span>
-                  <TomorrowIcon size={18} className={weatherStyle.text} />
-                  <span className="text-xl font-black">{weather.tomorrow.condition}</span>
-                </div>
-                <div className="flex shrink-0 items-center gap-3 text-right">
-                  <div className="text-sm font-bold text-white/45">降水 {weather.tomorrow.rain}%</div>
-                  <div className="text-base font-black tabular-nums">
-                    {weather.tomorrow.high}℃ <span className="font-bold text-white/45">/ {weather.tomorrow.low}℃</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-<div className="flex flex-1 flex-col rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-  {!showOperationMap ? (
-    <>
-      <div className="mb-2 text-sm font-bold text-white/70">運行メモ</div>
-
-      <div className="flex flex-1 flex-col gap-2">
-        {operationLines.map((line) => {
-          const isNormal = line.severity === "normal";
-          return (
-            <div key={line.id} className="flex flex-1 flex-col justify-center rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="mb-1 flex items-center gap-2">
-                <span
-                  className="rounded px-2 py-0.5 text-[11px] font-black text-white"
-                  style={{ backgroundColor: LINE_COLORS[line.name] || YOKOSUKA_BLUE }}
-                >
-                  {line.name}
-                </span>
-                <span className={`text-xs font-black ${isNormal ? "text-emerald-300" : "text-amber-300"}`}>
-                  {line.status}
-                </span>
-              </div>
-              <div className="text-sm font-bold leading-relaxed text-white/55">{line.detail}</div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-3 text-[11px] text-white/30">
-        <span>平日ダイヤ固定 / 運行情報はYahoo経由</span>
-      </div>
-    </>
-  ) : (
-    <>
-      <div className="mb-2 text-sm font-bold text-white/70">
-        <span>JR東日本 関東エリア運行マップ</span>
-      </div>
-
-      <a
-        href="https://traininfo.jreast.co.jp/train_info/kanto.aspx"
-        target="_blank"
-        rel="noreferrer"
-        className="block flex-1 overflow-hidden rounded-xl border border-white/10 bg-white"
-      >
-        <img
-          src="https://traininfo.jreast.co.jp/train_info/img/display/idsImage.gif"
-          alt="JR東日本 関東エリア運行マップ"
-          className="h-full w-full object-contain"
-        />
-      </a>
-
-      <div className="mt-2 text-[11px] text-white/30">
-        クリックでJR東日本公式ページを開く
-      </div>
-    </>
-  )}
-</div>
-
-          </aside>
+            ) : (
+              <a
+                href="https://traininfo.jreast.co.jp/train_info/kanto.aspx"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3"
+              >
+                <span className="shrink-0 text-xs font-bold text-white/70">JR東日本 関東エリア運行マップ</span>
+                <img
+                  src="https://traininfo.jreast.co.jp/train_info/img/display/idsImage.gif"
+                  alt="JR東日本 関東エリア運行マップ"
+                  className="h-24 flex-1 rounded-lg border border-white/10 bg-white object-contain"
+                />
+                <span className="shrink-0 text-[11px] text-white/30">クリックで公式ページ</span>
+              </a>
+            )}
+          </div>
         </main>
       </div>
     </div>
