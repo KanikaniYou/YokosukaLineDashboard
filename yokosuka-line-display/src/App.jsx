@@ -192,12 +192,12 @@ function getUpcomingTrains(date) {
   const upcoming = timetable
     .map((train) => ({ ...train, minutes: train.minutesFromMidnight - current }))
     .filter((train) => train.minutes >= -1)
-    .slice(0, 3);
+    .slice(0, 4);
 
-  if (upcoming.length >= 3) return upcoming;
+  if (upcoming.length >= 4) return upcoming;
 
   const tomorrow = timetable
-    .slice(0, 3 - upcoming.length)
+    .slice(0, 4 - upcoming.length)
     .map((train) => ({ ...train, minutes: train.minutesFromMidnight + 24 * 60 - current }));
 
   return [...upcoming, ...tomorrow];
@@ -336,6 +336,12 @@ function TrainRow({ train, delayMinutes, operation }) {
 
         <div className="shrink-0 text-4xl font-black tracking-tight tabular-nums text-white">{adjustedTime}</div>
 
+        {isNormalOperation && (
+          <span className={`shrink-0 inline-flex whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-sm font-black ${urgencyBg} ${urgencyText}`}>
+            {urgencyLabel}
+          </span>
+        )}
+
         <div className="ml-auto flex shrink-0 items-center gap-2 text-right">
           <div className="rounded-md px-2 py-1 text-xs font-black text-white" style={{ backgroundColor: lineColor }}>
             {train.line}
@@ -347,14 +353,6 @@ function TrainRow({ train, delayMinutes, operation }) {
           </div>
         </div>
       </div>
-
-      {isNormalOperation && (
-        <div className="mt-2 pl-14">
-          <span className={`inline-flex rounded-full border border-white/10 px-3 py-1 text-sm font-black ${urgencyBg} ${urgencyText}`}>
-            {urgencyLabel}
-          </span>
-        </div>
-      )}
     </div>
   );
 }
@@ -602,10 +600,11 @@ export default function YokosukaLineHomeDisplay() {
               </div>
             </div>
           ) : (
-            <div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
+            <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 overflow-hidden">
               <TrainRow train={trains[0]} delayMinutes={0} operation={operationFor(trains[0])} />
               <TrainRow train={trains[1]} delayMinutes={0} operation={operationFor(trains[1])} />
               <TrainRow train={trains[2]} delayMinutes={0} operation={operationFor(trains[2])} />
+              <TrainRow train={trains[3]} delayMinutes={0} operation={operationFor(trains[3])} />
             </div>
           )}
 
