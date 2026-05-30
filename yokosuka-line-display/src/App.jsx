@@ -210,16 +210,29 @@ const defaultOperationLines = [
 
 const OPERATION_API_URL = "https://yokosuka-status.kanikani-you.workers.dev/";
 
-function normalizeOperationStatus(status) {
-  if (status.includes("運転見合わせ")) {
-    return "suspended";
+// detail が「事故・遅延の情報なし／平常」を示す文言
+const NO_TROUBLE_PATTERNS = [/情報はありません/, /平常運転/, /平常どおり/, /平常通り/];
+
+// status と detail の両方を見て運行状況を確定する。
+// Worker が status="運転見合わせ" なのに detail="情報はありません" のような
+// 矛盾した値を返すことがあるため、detail の「平常」表現を最優先する。
+function resolveOperation(status, detail) {
+  const s = status || "";
+  const d = detail || "";
+
+  if (NO_TROUBLE_PATTERNS.some((re) => re.test(d))) {
+    return { status: "平常運転", severity: "normal" };
   }
 
-  if (status.includes("遅延") || status.includes("列車遅延")) {
-    return "delay";
+  if (s.includes("運転見合わせ") || d.includes("運転見合わせ")) {
+    return { status: s || "運転見合わせ", severity: "suspended" };
   }
 
-  return "normal";
+  if (s.includes("遅延") || s.includes("列車遅延") || d.includes("遅延")) {
+    return { status: s || "遅延", severity: "delay" };
+  }
+
+  return { status: s || "平常運転", severity: "normal" };
 }
 
 const defaultWeather = {
@@ -380,13 +393,17 @@ export default function YokosukaLineHomeDisplay() {
         const res = await fetch(OPERATION_API_URL);
         const data = await res.json();
 
-        const lines = (data.lines || []).map((line) => ({
-          id: line.id,
-          name: line.name,
-          status: line.status || "不明",
-          severity: normalizeOperationStatus(line.status || ""),
-          detail: line.detail || "運行情報の詳細は取得できませんでした",
-        }));
+        const lines = (data.lines || []).map((line) => {
+          const detail = line.detail || "運行情報の詳細は取得できませんでした";
+          const resolved = resolveOperation(line.status || "", detail);
+          return {
+            id: line.id,
+            name: line.name,
+            status: resolved.status,
+            severity: resolved.severity,
+            detail,
+          };
+        });
 
         if (lines.length) {
           setOperationLines(lines);
