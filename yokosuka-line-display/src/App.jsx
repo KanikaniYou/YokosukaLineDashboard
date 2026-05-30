@@ -559,53 +559,78 @@ export default function YokosukaLineHomeDisplay() {
             <div className="shrink-0 text-xs font-bold text-white/40">ホームまで徒歩10分</div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
-            <TrainRow train={trains[0]} delayMinutes={0} operation={operationFor(trains[0])} />
-            <TrainRow train={trains[1]} delayMinutes={0} operation={operationFor(trains[1])} />
-            <TrainRow train={trains[2]} delayMinutes={0} operation={operationFor(trains[2])} />
-          </div>
-
-          <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.025] p-3">
-            {!showOperationMap ? (
-              <div className="flex items-center gap-3">
-                <span className="shrink-0 text-xs font-bold text-white/40">運行メモ</span>
-                <div className="grid flex-1 grid-cols-2 gap-2">
-                  {operationLines.map((line) => {
-                    const isNormal = line.severity === "normal";
-                    return (
-                      <div key={line.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5">
+          {/* 平常時は発車案内、遅延・運転見合わせ時はこのエリア全体が運行情報／JRマップに切り替わる */}
+          {hasOperationTrouble && showOperationMap ? (
+            <div className="flex min-h-0 flex-1 flex-col gap-3">
+              <div className="grid shrink-0 grid-cols-2 gap-3">
+                {operationLines.map((line) => {
+                  const isNormal = line.severity === "normal";
+                  return (
+                    <div key={line.id} className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] p-3">
+                      <div className="mb-1 flex items-center gap-2">
                         <span
-                          className="shrink-0 rounded px-2 py-0.5 text-[11px] font-black text-white"
+                          className="rounded px-2 py-0.5 text-xs font-black text-white"
                           style={{ backgroundColor: LINE_COLORS[line.name] || YOKOSUKA_BLUE }}
                         >
                           {line.name}
                         </span>
-                        <span className={`shrink-0 text-xs font-black ${isNormal ? "text-emerald-300" : "text-amber-300"}`}>
+                        <span className={`text-sm font-black ${isNormal ? "text-emerald-300" : "text-amber-300"}`}>
                           {line.status}
                         </span>
-                        <span className="truncate text-xs font-bold text-white/45">{line.detail}</span>
                       </div>
-                    );
-                  })}
-                </div>
-                <span className="shrink-0 text-[11px] text-white/30">Yahoo経由</span>
+                      <div className="text-sm font-bold leading-relaxed text-white/70">{line.detail}</div>
+                    </div>
+                  );
+                })}
               </div>
-            ) : (
+
               <a
                 href="https://traininfo.jreast.co.jp/train_info/kanto.aspx"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3"
+                className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-white"
               >
-                <span className="shrink-0 text-xs font-bold text-white/70">JR東日本 関東エリア運行マップ</span>
                 <img
                   src="https://traininfo.jreast.co.jp/train_info/img/display/idsImage.gif"
                   alt="JR東日本 関東エリア運行マップ"
-                  className="h-24 flex-1 rounded-lg border border-white/10 bg-white object-contain"
+                  className="min-h-0 w-full flex-1 object-contain"
                 />
-                <span className="shrink-0 text-[11px] text-white/30">クリックで公式ページ</span>
               </a>
-            )}
+
+              <div className="shrink-0 text-center text-[11px] text-white/30">
+                JR東日本 関東エリア運行マップ / クリックで公式ページ・運行情報はYahoo経由
+              </div>
+            </div>
+          ) : (
+            <div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
+              <TrainRow train={trains[0]} delayMinutes={0} operation={operationFor(trains[0])} />
+              <TrainRow train={trains[1]} delayMinutes={0} operation={operationFor(trains[1])} />
+              <TrainRow train={trains[2]} delayMinutes={0} operation={operationFor(trains[2])} />
+            </div>
+          )}
+
+          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3">
+            <span className="shrink-0 text-xs font-bold text-white/40">運行メモ</span>
+            <div className="grid flex-1 grid-cols-2 gap-2">
+              {operationLines.map((line) => {
+                const isNormal = line.severity === "normal";
+                return (
+                  <div key={line.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5">
+                    <span
+                      className="shrink-0 rounded px-2 py-0.5 text-[11px] font-black text-white"
+                      style={{ backgroundColor: LINE_COLORS[line.name] || YOKOSUKA_BLUE }}
+                    >
+                      {line.name}
+                    </span>
+                    <span className={`shrink-0 text-xs font-black ${isNormal ? "text-emerald-300" : "text-amber-300"}`}>
+                      {line.status}
+                    </span>
+                    <span className="truncate text-xs font-bold text-white/45">{line.detail}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <span className="shrink-0 text-[11px] text-white/30">Yahoo経由</span>
           </div>
         </main>
       </div>
