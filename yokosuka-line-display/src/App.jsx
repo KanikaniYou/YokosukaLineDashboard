@@ -243,6 +243,7 @@ const defaultWeather = {
   low: 0,
   rain: 0,
   uvLevel: "medium",
+  tomorrow: { condition: "取得中", high: 0, low: 0, rain: 0 },
 };
 
 function getWeatherStyle(weather) {
@@ -432,7 +433,7 @@ export default function YokosukaLineHomeDisplay() {
     async function fetchWeather() {
       try {
         const res = await fetch(
-          "https://api.open-meteo.com/v1/forecast?latitude=35.4764&longitude=139.5563&current=temperature_2m,weather_code&hourly=precipitation_probability&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=Asia%2FTokyo&forecast_days=1"
+          "https://api.open-meteo.com/v1/forecast?latitude=35.4764&longitude=139.5563&current=temperature_2m,weather_code&hourly=precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=2"
         );
         const data = await res.json();
 
@@ -473,6 +474,12 @@ export default function YokosukaLineHomeDisplay() {
           low: data.daily.temperature_2m_min[0],
           rain,
           uvLevel: uv >= 6 ? "high" : uv >= 3 ? "medium" : "low",
+          tomorrow: {
+            condition: weatherCodeMap[data.daily.weather_code?.[1]] || "不明",
+            high: data.daily.temperature_2m_max[1],
+            low: data.daily.temperature_2m_min[1],
+            rain: data.daily.precipitation_probability_max?.[1] ?? 0,
+          },
         });
       } catch (error) {
         console.error("weather fetch failed", error);
@@ -487,6 +494,7 @@ export default function YokosukaLineHomeDisplay() {
   const trains = useMemo(() => getUpcomingTrains(now), [now]);
   const weatherStyle = getWeatherStyle(weather);
   const WeatherIcon = getWeatherIcon(weather.condition);
+  const TomorrowIcon = getWeatherIcon(weather.tomorrow.condition);
 
   return (
     <div className="h-screen w-full overflow-hidden bg-[#050607] p-4 text-white">
@@ -544,6 +552,20 @@ export default function YokosukaLineHomeDisplay() {
                 <div className="shrink-0 text-right">
                   <div className="text-4xl font-black tabular-nums">{weather.currentTemp.toFixed(1)}℃</div>
                   <div className="mt-1 text-sm font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black tracking-widest text-white/45">明日</span>
+                  <TomorrowIcon size={18} className={weatherStyle.text} />
+                  <span className="text-xl font-black">{weather.tomorrow.condition}</span>
+                </div>
+                <div className="flex shrink-0 items-center gap-3 text-right">
+                  <div className="text-sm font-bold text-white/45">降水 {weather.tomorrow.rain}%</div>
+                  <div className="text-base font-black tabular-nums">
+                    {weather.tomorrow.high}℃ <span className="font-bold text-white/45">/ {weather.tomorrow.low}℃</span>
+                  </div>
                 </div>
               </div>
             </div>
