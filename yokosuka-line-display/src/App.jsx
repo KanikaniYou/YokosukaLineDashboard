@@ -542,7 +542,7 @@ export default function YokosukaLineHomeDisplay() {
   const TomorrowIcon = getWeatherIcon(weather.tomorrow.condition);
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-[#050607] p-4 text-white">
+    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-[#050607] p-4 text-white">
       <FullscreenButton />
       <div className="mx-auto flex h-full max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 p-5 shadow-2xl shadow-black lg:aspect-[16/10] lg:h-auto">
         {/* ===== 上段: 時計 + 天気 ===== */}
