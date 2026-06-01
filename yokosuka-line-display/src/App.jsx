@@ -502,13 +502,21 @@ export default function YokosukaLineHomeDisplay() {
 
         const uv = data.daily.uv_index_max?.[0] ?? 0;
 
-        // 日次の最大値（深夜時間帯を含む）ではなく、現在時刻以降の降水確率の最大値を採用する
+        // 今日の降水確率は「現在時刻以降かつ今日中」の時間帯の最大値を採用する。
+        // hourly は forecast_days=2 ぶん（48時間=今日＋明日）返るため、日付で今日に絞らないと
+        // 明日の雨を拾って誤った高確率になる。
         const hourlyTimes = data.hourly?.time ?? [];
         const hourlyRain = data.hourly?.precipitation_probability ?? [];
-        const currentHour = (data.current.time || "").slice(0, 13);
+        const currentTime = data.current.time || "";
+        const today = currentTime.slice(0, 10);
+        const currentHour = currentTime.slice(0, 13);
         let startIndex = hourlyTimes.findIndex((t) => t.slice(0, 13) === currentHour);
         if (startIndex < 0) startIndex = 0;
-        const remainingRain = hourlyRain.slice(startIndex).filter((v) => v != null);
+        const remainingRain = hourlyTimes
+          .map((t, i) => ({ t, v: hourlyRain[i] }))
+          .slice(startIndex)
+          .filter((h) => h.t.slice(0, 10) === today && h.v != null)
+          .map((h) => h.v);
         const rain = remainingRain.length ? Math.max(...remainingRain) : 0;
 
         setWeather({
