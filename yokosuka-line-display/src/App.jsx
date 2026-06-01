@@ -253,6 +253,7 @@ const defaultWeather = {
   low: 0,
   rain: 0,
   uvLevel: "medium",
+  rainHours: [],
   tomorrow: { condition: "取得中", high: 0, low: 0, rain: 0 },
 };
 
@@ -366,6 +367,39 @@ function TrainRow({ train, delayMinutes, operation }) {
             <div className="mb-1 text-sm font-bold tracking-widest text-white/50">行</div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// 今日の降水確率を1時間ごとの棒グラフで表示（過去は淡色、これからは青／高確率ほど濃い）
+function RainChart({ hours }) {
+  if (!hours || hours.length === 0) return null;
+
+  return (
+    <div className="border-t border-white/10 pt-2.5">
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="text-xs font-black tracking-widest text-white/45">今日の降水確率</span>
+        <span className="text-[11px] font-bold text-white/30">1時間ごと</span>
+      </div>
+      <div className="flex h-12 items-end gap-[2px]">
+        {hours.map((b) => (
+          <div
+            key={b.hour}
+            title={`${b.hour}時 ${b.prob}%`}
+            className={`flex-1 rounded-t-sm ${
+              b.past ? "bg-white/10" : b.prob >= 50 ? "bg-sky-300" : "bg-sky-400/60"
+            }`}
+            style={{ height: `${Math.max(3, b.prob)}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-1 flex justify-between text-[10px] font-bold text-white/35">
+        <span>0</span>
+        <span>6</span>
+        <span>12</span>
+        <span>18</span>
+        <span>24時</span>
       </div>
     </div>
   );
@@ -519,6 +553,16 @@ export default function YokosukaLineHomeDisplay() {
           .map((h) => h.v);
         const rain = remainingRain.length ? Math.max(...remainingRain) : 0;
 
+        // 今日24時間分の降水確率（グラフ用）。過去の時間帯は past=true で淡色表示する
+        const rainHours = hourlyTimes
+          .map((t, i) => ({ t, v: hourlyRain[i] }))
+          .filter((h) => h.t.slice(0, 10) === today)
+          .map((h) => ({
+            hour: Number(h.t.slice(11, 13)),
+            prob: h.v ?? 0,
+            past: h.t.slice(0, 13) < currentHour,
+          }));
+
         setWeather({
           area: "東戸塚 / 横浜",
           condition: weatherCodeMap[data.current.weather_code] || "不明",
@@ -527,6 +571,7 @@ export default function YokosukaLineHomeDisplay() {
           low: data.daily.temperature_2m_min[0],
           rain,
           uvLevel: uv >= 6 ? "high" : uv >= 3 ? "medium" : "low",
+          rainHours,
           tomorrow: {
             condition: weatherCodeMap[data.daily.weather_code?.[1]] || "不明",
             high: data.daily.temperature_2m_max[1],
@@ -585,6 +630,8 @@ export default function YokosukaLineHomeDisplay() {
                 <div className="mt-1.5 text-sm font-bold text-white/50">最高 {weather.high}℃ / 最低 {weather.low}℃</div>
               </div>
             </div>
+
+            <RainChart hours={weather.rainHours} />
 
             <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2.5">
               <div className="flex items-center gap-2">
