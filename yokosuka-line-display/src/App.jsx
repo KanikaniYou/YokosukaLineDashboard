@@ -223,9 +223,22 @@ const OPERATION_API_URL = "https://yokosuka-status.kanikani-you.workers.dev/";
 // detail が「事故・遅延の情報なし／平常」を示す文言
 const NO_TROUBLE_PATTERNS = [/情報はありません/, /平常運転/, /平常どおり/, /平常通り/];
 
+// 運転見合わせ・遅延以外の「ダイヤの乱れ」を示す文言（運休・運転変更・直通中止など）
+const DISRUPTION_PATTERNS = [
+  /運休/,
+  /運転変更/,
+  /運転を取りやめ/,
+  /直通運転を中止/,
+  /本数を減ら/,
+  /間引き/,
+  /見合わせ/,
+  /遅れ/,
+];
+
 // status と detail の両方を見て運行状況を確定する。
 // Worker が status="運転見合わせ" なのに detail="情報はありません" のような
-// 矛盾した値を返すことがあるため、detail の「平常」表現を最優先する。
+// 矛盾した値を返したり、台風時に status="不明" を返すことがあるため、
+// detail の文言から実態を判定する。
 function resolveOperation(status, detail) {
   const s = status || "";
   const d = detail || "";
@@ -235,11 +248,21 @@ function resolveOperation(status, detail) {
   }
 
   if (s.includes("運転見合わせ") || d.includes("運転見合わせ")) {
-    return { status: s || "運転見合わせ", severity: "suspended" };
+    return { status: "運転見合わせ", severity: "suspended" };
   }
 
-  if (s.includes("遅延") || s.includes("列車遅延") || d.includes("遅延")) {
-    return { status: s || "遅延", severity: "delay" };
+  if (s.includes("遅延") || s.includes("列車遅延") || d.includes("遅延") || d.includes("遅れ")) {
+    return { status: s && s !== "不明" ? s : "遅延", severity: "delay" };
+  }
+
+  // status が「不明」等でも、detail が運休・運転変更などの乱れを示すなら異常扱いにする
+  if (DISRUPTION_PATTERNS.some((re) => re.test(d))) {
+    return { status: s && s !== "不明" ? s : "ダイヤ乱れ", severity: "delay" };
+  }
+
+  // status="不明" で detail に判断材料もない場合は、平常と断定せず注意喚起する
+  if (s === "不明") {
+    return { status: "運行情報を確認", severity: "delay" };
   }
 
   return { status: s || "平常運転", severity: "normal" };
